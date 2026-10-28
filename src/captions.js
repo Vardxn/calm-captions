@@ -18,6 +18,7 @@ const SITES = {
   },
   // Udemy's class names are hashed, so use data-purpose and find the player as the closest box holding both video and caption.
   udemy: {
+    native: true, // keep Udemy's own caption timing and length; only restyle
     player: () => {
       const v = document.querySelector('video');
       const c = document.querySelector('[data-purpose="captions-cue-text"]');
@@ -101,7 +102,8 @@ function update() {
     .filter(Boolean);
   const n = Math.max(3, cfg.words);
 
-  if (!cur.length) prev = [];
+  if (site.native) shown = cur.join(' '); // this site already times its captions well
+  else if (!cur.length) prev = [];
   else if (cur.join(' ') !== prev.join(' ')) {
     // Rolling captions repeat old words, so only the words past the overlap are new.
     let k = Math.min(prev.length, cur.length);
