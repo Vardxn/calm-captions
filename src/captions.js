@@ -76,7 +76,9 @@ function update() {
     player.appendChild(box);
   }
   // The site's own caption stays in the DOM (hidden by CSS); we only read its text.
-  const text = [...player.querySelectorAll(site.text)].map((s) => s.textContent).join(' ').split(/\s+/).filter(Boolean).join(' ');
+  // A Set drops lines the site renders twice (e.g. two caption windows holding the same cue).
+  const parts = new Set([...player.querySelectorAll(site.text)].map((s) => s.textContent.trim()).filter(Boolean));
+  const text = [...parts].join(' ').split(/\s+/).join(' ');
   if (box.textContent !== text) box.textContent = text;
   box.hidden = !text;
 
