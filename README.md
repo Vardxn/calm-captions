@@ -15,8 +15,11 @@ Click the extension icon to change words per group, size, colors and position.
 ## Build
 `./build.sh` writes both zips to `dist/`.
 
+## Languages
+The rounded font covers Latin scripts (English, Spanish, French, Portuguese...). Hindi, Arabic, Chinese, Japanese and Russian use your system's fonts, with right-to-left text handled automatically.
+
 ## Known limits
-- Groups appear once their last word is spoken, so there is about one group of delay.
+- With *Group words* on, groups appear once their last word is spoken, so there is about one group of delay.
 - Udemy, Netflix and Prime Video selectors are untested; Hotstar is not supported yet.
 
 MIT licensed. See [PRIVACY.md](PRIVACY.md).

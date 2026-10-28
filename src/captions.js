@@ -32,7 +32,7 @@ const SITES = {
 };
 const site = SITES[location.hostname] || (location.hostname.endsWith('udemy.com') && SITES.udemy);
 
-const DEFAULTS = { enabled: true, words: 6, size: 2.4, opacity: 72, bg: '#555555', color: '#ffffff', radius: 45, bottom: 13, font: 'outfit' };
+const DEFAULTS = { enabled: true, group: false, words: 6, size: 2.4, opacity: 72, bg: '#555555', color: '#ffffff', radius: 45, bottom: 13, font: 'outfit' };
 let cfg = { ...DEFAULTS };
 
 // Loaded from JS so the same file works in Chrome, Edge and Firefox (their extension URLs differ).
@@ -102,7 +102,7 @@ function update() {
     .filter(Boolean);
   const n = Math.max(3, cfg.words);
 
-  if (site.native) shown = cur.join(' '); // this site already times its captions well
+  if (site.native || !cfg.group) shown = cur.join(' '); // default: keep the site's own caption timing and length, only restyle
   else if (!cur.length) prev = [];
   else if (cur.join(' ') !== prev.join(' ')) {
     // Rolling captions repeat old words, so only the words past the overlap are new.
@@ -111,7 +111,7 @@ function update() {
     for (const w of cur.slice(k)) {
       group.push(w);
       // end the group when it is full, at . ! ?, or at a comma once it has a few words
-      if (group.length >= n || /[.!?]$/.test(w) || (/,$/.test(w) && group.length >= 3)) complete();
+      if (group.length >= n || /[.!?。！？।؟]$/.test(w) || (/,$/.test(w) && group.length >= 3)) complete();
     }
     prev = cur;
     clearTimeout(pauseT);

@@ -12,9 +12,10 @@
   border-radius: var(--sc-radius, 0.45em);
   background: var(--sc-bg, rgba(85, 85, 85, 0.72));
   color: var(--sc-color, #fff);
-  font-family: var(--sc-font, "SoftOutfit"), system-ui, sans-serif;
+  font-family: var(--sc-font, "SoftOutfit"), system-ui, "Kohinoor Devanagari", "Geeza Pro", "PingFang SC", "Hiragino Sans", "Segoe UI", "Noto Sans", sans-serif;
   font-weight: 600;
-  line-height: 1.4;
+  line-height: 1.55; /* taller scripts (Hindi, Arabic) need room */
+  unicode-bidi: plaintext; /* right-to-left text such as Arabic flips by itself */
   pointer-events: none;
 }
 
