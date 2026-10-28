@@ -1,25 +1,30 @@
 # Calm Captions
 
-Calmer subtitles for YouTube (including YouTube videos embedded on other sites) and Udemy. Captions in a soft rounded pill with an easier-on-the-eyes font, and your own size and colors. Collects no data.
+Easier-on-the-eyes captions for **YouTube** (including YouTube videos embedded on other sites) and **Udemy**. Instead of a hard black box, you get a soft, rounded, frosted-glass pill with a clean font. No data is collected.
 
-## Install
-- **Edge / Firefox:** install from the add-on store (link coming soon).
-- **Chrome (manual, 4 steps):**
-  1. Download `calm-captions-chromium.zip` from the Releases page and unzip it.
-  2. Open `chrome://extensions` and turn on Developer mode.
-  3. Click **Load unpacked** and pick the unzipped folder.
-  4. Open a YouTube video and turn captions on (CC).
+## Install (Chrome, Edge, Brave)
+1. Download `calm-captions-chromium.zip` from the [Releases page](../../releases/latest) and unzip it.
+2. Open `chrome://extensions` (or `edge://extensions`) and turn on **Developer mode**.
+3. Click **Load unpacked** and pick the unzipped folder.
+4. Open a YouTube video or Udemy lesson and turn captions on (CC).
 
-Click the extension icon to turn it on or off and change text size, background opacity and colors. On Udemy it also follows Udemy's own caption menu.
+Firefox: use `calm-captions-firefox.zip` and load it from `about:debugging` → *This Firefox* → *Load Temporary Add-on*.
 
-## Build
-`./build.sh` writes both zips to `dist/`.
+## Settings
+Click the extension icon to turn it on or off and change text size, background opacity and colors. On Udemy it also follows Udemy's own caption menu (font size, background opacity, display under video).
 
 ## Languages
-The rounded font covers Latin scripts (English, Spanish, French, Portuguese...). Hindi, Arabic, Chinese, Japanese and Russian use your system's fonts, with right-to-left text handled automatically.
+The rounded font covers Latin scripts (English, Spanish, French, Portuguese...). Hindi, Arabic, Chinese, Japanese and Russian use your system's fonts, and right-to-left text flips automatically.
+
+## Build
+```sh
+./build.sh   # writes dist/calm-captions-chromium.zip and dist/calm-captions-firefox.zip
+```
+Source is in `src/`; there are no dependencies.
 
 ## Known limits
-- Udemy support is based on its current page structure and may need a fix if Udemy changes.
+- Udemy support follows Udemy's current page structure and may need a fix if Udemy changes it.
 - Netflix, Prime Video and Hotstar are not supported.
+- YouTube auto-generated captions appear word by word, the way YouTube shows them.
 
 MIT licensed. See [PRIVACY.md](PRIVACY.md).
