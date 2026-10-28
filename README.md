@@ -1,3 +1,11 @@
+
+
+https://github.com/user-attachments/assets/9982620c-422f-4411-94d6-6ec9304d06c2
+
+
+
+https://github.com/user-attachments/assets/16181766-cbee-4bff-a608-dbfa3f90e316
+
 # Calm Captions
 
 Easier-on-the-eyes captions for **YouTube** (including YouTube videos embedded on other sites) and **Udemy**. Instead of a hard black box, you get a soft, rounded, frosted-glass pill with a clean font. No data is collected.
