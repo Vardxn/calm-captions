@@ -22,7 +22,7 @@ const SITES = {
 };
 const site = ((location.hostname.endsWith('youtube.com') || location.hostname.endsWith('youtube-nocookie.com')) && SITES['www.youtube.com']) || (location.hostname.endsWith('udemy.com') && SITES.udemy);
 
-const DEFAULTS = { enabled: true, group: false, words: 6, size: 2.4, opacity: 72, bg: '#555555', color: '#ffffff', radius: 45, bottom: 13, font: 'outfit' };
+const DEFAULTS = { enabled: true, group: false, words: 6, size: 1.2, opacity: 72, bg: '#555555', color: '#ffffff', radius: 45, bottom: 13, font: 'outfit' };
 let cfg = { ...DEFAULTS };
 let under = false; // Udemy's "Display under video" is on: leave its own captions alone
 
@@ -130,8 +130,8 @@ function update() {
     if (el && video) {
       const now = el.getBoundingClientRect().top >= video.getBoundingClientRect().bottom - 2;
       if (now !== under) { under = now; applyStyle(); }
-      // our box takes Udemy's own size, scaled by the popup's size slider (2.4 = same as Udemy)
-      box.style.fontSize = parseFloat(getComputedStyle(el).fontSize) * (cfg.size / DEFAULTS.size) + 'px';
+      // our box takes Udemy's own size, scaled by the popup's size slider (2.4 = same as Udemy, default is half)
+      box.style.fontSize = parseFloat(getComputedStyle(el).fontSize) * (cfg.size / 2.4) + 'px';
       const a = bgAlpha(el);
       if (a) box.style.setProperty('--sc-bg', `color-mix(in srgb, ${cfg.bg} ${Math.round(a * 100)}%, transparent)`);
     }

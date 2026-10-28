@@ -1,4 +1,4 @@
-const DEFAULTS = { enabled: true, group: false, words: 6, size: 2.4, opacity: 72, bg: '#555555', color: '#ffffff', radius: 45, bottom: 13, font: 'outfit' };
+const DEFAULTS = { enabled: true, group: false, words: 6, size: 1.2, opacity: 72, bg: '#555555', color: '#ffffff', radius: 45, bottom: 13, font: 'outfit' };
 chrome.storage.local.get(DEFAULTS, (v) => {
   for (const k in DEFAULTS) {
     const el = document.getElementById(k);
