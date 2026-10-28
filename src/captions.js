@@ -1,13 +1,13 @@
-// Per-site: where to put the pill, where the site's own caption text is, and what to hide.
+// Per-site: where the pill goes, where the site's own caption text is, what to hide, and its default text size.
 const SITES = {
-  'www.youtube.com': {
+  youtube: {
     player: '#movie_player',
     text: '.ytp-caption-segment',
     hide: '.ytp-caption-window-container',
+    base: (player) => player.clientWidth * 0.012,
   },
   // Udemy's class names are hashed, so use data-purpose and find the player as the closest box holding both video and caption.
   udemy: {
-    native: true, // keep Udemy's own caption timing and length; only restyle
     mirror: true, // follow Udemy's own caption menu (font size, background opacity, display under video)
     player: () => {
       const v = document.querySelector('video');
@@ -18,11 +18,13 @@ const SITES = {
     },
     text: '[data-purpose="captions-cue-text"]',
     hide: '[data-purpose="captions-cue-text"], [class*="captions-display-module--captions-container"]',
+    base: (player, el) => (el ? parseFloat(getComputedStyle(el).fontSize) * 0.5 : player.clientWidth * 0.012),
   },
 };
-const site = ((location.hostname.endsWith('youtube.com') || location.hostname.endsWith('youtube-nocookie.com')) && SITES['www.youtube.com']) || (location.hostname.endsWith('udemy.com') && SITES.udemy);
+const host = location.hostname;
+const site = (host.endsWith('youtube.com') || host.endsWith('youtube-nocookie.com')) ? SITES.youtube : SITES.udemy;
 
-const DEFAULTS = { enabled: true, group: false, words: 6, size: 1.2, opacity: 72, bg: '#555555', color: '#ffffff', radius: 45, bottom: 13, font: 'outfit' };
+const DEFAULTS = { enabled: true, size: 100, opacity: 72, bg: '#555555', color: '#ffffff' };
 let cfg = { ...DEFAULTS };
 let under = false; // Udemy's "Display under video" is on: leave its own captions alone
 
@@ -40,38 +42,8 @@ document.documentElement.appendChild(hideStyle);
 
 function applyStyle() {
   hideStyle.textContent = cfg.enabled && !under ? `${site.hide}{opacity:0!important;pointer-events:none}` : '';
-  const s = box.style;
-  s.setProperty('--sc-bg', `color-mix(in srgb, ${cfg.bg} ${cfg.opacity}%, transparent)`);
-  s.setProperty('--sc-color', cfg.color);
-  s.setProperty('--sc-radius', cfg.radius / 100 + 'em');
-  s.setProperty('--sc-bottom', cfg.bottom + '%');
-  s.setProperty('--sc-font', cfg.font === 'outfit' ? '"SoftOutfit"' : 'system-ui');
-  schedule();
-}
-
-let queued = false;
-const PAUSE = 450; // ms of silence that ends a group
-let prev = []; // words the site showed on the previous update
-let group = []; // words of the group being collected
-let shown = '';
-let pauseT = 0;
-let hideT = 0;
-
-function clearAll() {
-  prev = [];
-  group = [];
-  shown = '';
-  clearTimeout(pauseT);
-  clearTimeout(hideT);
-}
-
-// A group is done: show it and keep it still until the next group is done.
-function complete() {
-  if (!group.length) return;
-  shown = group.join(' ');
-  group = [];
-  clearTimeout(hideT);
-  hideT = setTimeout(() => { shown = ''; schedule(); }, 2500);
+  box.style.setProperty('--sc-bg', `color-mix(in srgb, ${cfg.bg} ${cfg.opacity}%, transparent)`);
+  box.style.setProperty('--sc-color', cfg.color);
   schedule();
 }
 
@@ -86,6 +58,14 @@ function bgAlpha(el) {
   }
 }
 
+let queued = false;
+function schedule() {
+  if (!queued) {
+    queued = true;
+    requestAnimationFrame(update);
+  }
+}
+
 function update() {
   queued = false;
   const player = typeof site.player === 'function' ? site.player() : document.querySelector(site.player);
@@ -94,55 +74,24 @@ function update() {
   if (box.parentNode !== player) {
     if (getComputedStyle(player).position === 'static') player.style.position = 'relative'; // the pill is positioned inside it
     player.appendChild(box);
-    player.querySelector('video')?.addEventListener('seeking', clearAll);
   }
   // The site's own caption stays in the DOM (hidden by CSS); we only read its text.
-  const cur = [...player.querySelectorAll(site.text)]
-    .map((s) => s.textContent)
-    .join(' ')
-    .split(/\s+/)
-    .filter(Boolean);
-  const n = Math.max(3, cfg.words);
+  const text = [...player.querySelectorAll(site.text)].map((s) => s.textContent).join(' ').split(/\s+/).filter(Boolean).join(' ');
+  if (box.textContent !== text) box.textContent = text;
+  box.hidden = !text;
 
-  if (site.native || !cfg.group) shown = cur.join(' '); // default: keep the site's own caption timing and length, only restyle
-  else if (!cur.length) prev = [];
-  else if (cur.join(' ') !== prev.join(' ')) {
-    // Rolling captions repeat old words, so only the words past the overlap are new.
-    let k = Math.min(prev.length, cur.length);
-    while (k > 0 && prev.slice(-k).join(' ') !== cur.slice(0, k).join(' ')) k--;
-    for (const w of cur.slice(k)) {
-      group.push(w);
-      // end the group when it is full, at . ! ?, or at a comma once it has a few words
-      if (group.length >= n || /[.!?。！？।؟]$/.test(w) || (/,$/.test(w) && group.length >= 3)) complete();
-    }
-    prev = cur;
-    clearTimeout(pauseT);
-    if (group.length) pauseT = setTimeout(complete, PAUSE); // speaker paused
-  }
-
-  if (box.textContent !== shown) box.textContent = shown;
-  box.hidden = !shown;
-  box.style.fontSize = player.clientWidth * (cfg.size / 100) + 'px';
+  const el = document.querySelector(site.text);
+  box.style.fontSize = site.base(player, el) * (cfg.size / 100) + 'px';
 
   if (site.mirror) {
-    const el = document.querySelector(site.text);
     const video = document.querySelector('video');
     if (el && video) {
       const now = el.getBoundingClientRect().top >= video.getBoundingClientRect().bottom - 2;
       if (now !== under) { under = now; applyStyle(); }
-      // our box takes Udemy's own size, scaled by the popup's size slider (2.4 = same as Udemy, default is half)
-      box.style.fontSize = parseFloat(getComputedStyle(el).fontSize) * (cfg.size / 2.4) + 'px';
       const a = bgAlpha(el);
       if (a) box.style.setProperty('--sc-bg', `color-mix(in srgb, ${cfg.bg} ${Math.round(a * 100)}%, transparent)`);
     }
     if (under) box.hidden = true;
-  }
-}
-
-function schedule() {
-  if (!queued) {
-    queued = true;
-    requestAnimationFrame(update);
   }
 }
 

@@ -1,7 +1,7 @@
 #soft-caption {
   position: absolute;
   left: 50%;
-  bottom: var(--sc-bottom, 13%);
+  bottom: 13%;
   transform: translateX(-50%);
   z-index: 2147483647;
   max-width: 80%;
@@ -9,10 +9,10 @@
   width: max-content;
   white-space: normal;
   padding: 0.15em 0.6em;
-  border-radius: var(--sc-radius, 0.45em);
+  border-radius: 0.45em;
   background: var(--sc-bg, rgba(85, 85, 85, 0.72));
   color: var(--sc-color, #fff);
-  font-family: var(--sc-font, "SoftOutfit"), system-ui, "Kohinoor Devanagari", "Geeza Pro", "PingFang SC", "Hiragino Sans", "Segoe UI", "Noto Sans", sans-serif;
+  font-family: "SoftOutfit", system-ui, "Kohinoor Devanagari", "Geeza Pro", "PingFang SC", "Hiragino Sans", "Segoe UI", "Noto Sans", sans-serif;
   font-weight: 600;
   line-height: 1.55; /* taller scripts (Hindi, Arabic) need room */
   unicode-bidi: plaintext; /* right-to-left text such as Arabic flips by itself */

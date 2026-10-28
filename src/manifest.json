@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Calm Captions",
-  "version": "2.3.1",
+  "version": "2.4.0",
   "description": "Calmer subtitles for YouTube (including videos embedded on other sites) and Udemy: rounded, easy on the eyes. Pick your font, size and colors.",
   "permissions": [
     "storage"
