@@ -122,7 +122,7 @@ function schedule() {
 // shortcut: observes the whole page, fine for one cheap rAF-throttled callback; narrow it if a site gets slow
 new MutationObserver(schedule).observe(document.documentElement, { childList: true, subtree: true, characterData: true });
 
-chrome.storage.sync.get(DEFAULTS, (v) => {
+chrome.storage.local.get(DEFAULTS, (v) => {
   cfg = v;
   applyStyle();
 });
