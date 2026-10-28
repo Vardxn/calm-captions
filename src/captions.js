@@ -16,11 +16,17 @@ const SITES = {
     text: '.atvwebplayersdk-captions-text',
     hide: '.atvwebplayersdk-captions-overlay',
   },
-  // shortcut: Udemy's class names are hashed, so these use stable data-purpose / partial class matches; untested
+  // Udemy's class names are hashed, so use data-purpose and find the player as the closest box holding both video and caption.
   udemy: {
-    player: '[class*="video-player--container"]',
+    player: () => {
+      const v = document.querySelector('video');
+      const c = document.querySelector('[data-purpose="captions-cue-text"]');
+      let a = v;
+      while (a && c && !a.contains(c)) a = a.parentElement;
+      return a || v?.parentElement;
+    },
     text: '[data-purpose="captions-cue-text"]',
-    hide: '[data-purpose="captions-display"], [data-purpose="captions-cue-text"], [class*="captions-display--captions-container"]',
+    hide: '[data-purpose="captions-cue-text"], [class*="captions-display-module--captions-container"]',
   },
 };
 const site = SITES[location.hostname] || (location.hostname.endsWith('udemy.com') && SITES.udemy);
@@ -79,10 +85,11 @@ function complete() {
 
 function update() {
   queued = false;
-  const player = document.querySelector(site.player);
+  const player = typeof site.player === 'function' ? site.player() : document.querySelector(site.player);
   if (!player) return;
   if (!cfg.enabled) { box.hidden = true; return; }
   if (box.parentNode !== player) {
+    if (getComputedStyle(player).position === 'static') player.style.position = 'relative'; // the pill is positioned inside it
     player.appendChild(box);
     player.querySelector('video')?.addEventListener('seeking', clearAll);
   }
