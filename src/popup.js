@@ -1,4 +1,4 @@
-const DEFAULTS = { enabled: true, size: 100, opacity: 35, bg: '#1e1e1e', color: '#ffffff' };
+const DEFAULTS = { enabled: true, size: 100, opacity: 20, bg: '#1e1e1e', color: '#ffffff' };
 chrome.storage.local.get(DEFAULTS, (v) => {
   for (const k in DEFAULTS) {
     const el = document.getElementById(k);

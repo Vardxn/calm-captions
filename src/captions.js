@@ -24,7 +24,7 @@ const SITES = {
 const host = location.hostname;
 const site = (host.endsWith('youtube.com') || host.endsWith('youtube-nocookie.com')) ? SITES.youtube : SITES.udemy;
 
-const DEFAULTS = { enabled: true, size: 100, opacity: 35, bg: '#1e1e1e', color: '#ffffff' };
+const DEFAULTS = { enabled: true, size: 100, opacity: 20, bg: '#1e1e1e', color: '#ffffff' };
 let cfg = { ...DEFAULTS };
 let under = false; // Udemy's "Display under video" is on: leave its own captions alone
 
