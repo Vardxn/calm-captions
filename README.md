@@ -25,6 +25,6 @@ Source is in `src/`; there are no dependencies.
 ## Known limits
 - Udemy support follows Udemy's current page structure and may need a fix if Udemy changes it.
 - Netflix, Prime Video and Hotstar are not supported.
-- YouTube auto-generated captions appear word by word, the way YouTube shows them.
+- On YouTube the extension reads the caption file the player loads, so captions follow the real timing. If it can't find that file, it falls back to the page's own caption text, which appears word by word.
 
 MIT licensed. See [PRIVACY.md](PRIVACY.md).

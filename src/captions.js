@@ -4,6 +4,7 @@ const SITES = {
     player: '#movie_player',
     text: '.ytp-caption-segment',
     hide: '.ytp-caption-window-container',
+    timed: true, // read real caption timing from YouTube's caption data when it can be found
     base: (player) => player.clientWidth * 0.012,
   },
   // Udemy's class names are hashed, so use data-purpose and find the player as the closest box holding both video and caption.
@@ -58,6 +59,53 @@ function bgAlpha(el) {
   }
 }
 
+// YouTube: find the caption file the player itself loaded, re-read it as json3, and show cues by video time.
+let cues = null;
+let cuesUrl = '';
+let cuesVideo = '';
+const videoId = () => new URLSearchParams(location.search).get('v') || location.pathname.split('/').pop();
+
+async function loadCues(url, id) {
+  try {
+    const u = new URL(url);
+    u.searchParams.set('fmt', 'json3');
+    u.searchParams.set('sc', '1'); // marks our own request so we skip it below
+    const data = await (await fetch(u)).json();
+    if (id !== videoId()) return;
+    cues = buildCues(data.events || [], u.searchParams.get('kind') === 'asr');
+    cuesVideo = id;
+    if (!looping) loop();
+  } catch {
+    cues = null; // falls back to reading the page's caption text
+  }
+}
+
+function syncTrack(names) {
+  const id = videoId();
+  for (let i = names.length - 1; i >= 0; i--) {
+    const n = names[i];
+    if (!n.includes('/api/timedtext') || n.includes('sc=1')) continue;
+    try {
+      if (new URL(n).searchParams.get('v') !== id) continue;
+    } catch { continue; }
+    if (n !== cuesUrl) { cuesUrl = n; loadCues(n, id); }
+    return;
+  }
+}
+
+if (site.timed) {
+  // shortcut: needs the page's own caption request to appear in the performance log; if it does not, the page-text fallback is used
+  new PerformanceObserver((list) => syncTrack(list.getEntries().map((e) => e.name))).observe({ type: 'resource', buffered: true });
+}
+
+let looping = false;
+function loop() {
+  looping = true;
+  update();
+  if (cues) requestAnimationFrame(loop);
+  else looping = false;
+}
+
 let queued = false;
 function schedule() {
   if (!queued) {
@@ -76,9 +124,16 @@ function update() {
     player.appendChild(box);
   }
   // The site's own caption stays in the DOM (hidden by CSS); we only read its text.
-  // A Set drops lines the site renders twice (e.g. two caption windows holding the same cue).
-  const parts = new Set([...player.querySelectorAll(site.text)].map((s) => s.textContent.trim()).filter(Boolean));
-  const text = [...parts].join(' ').split(/\s+/).join(' ');
+  let text;
+  const video = player.querySelector('video');
+  if (cues && cuesVideo === videoId() && video) {
+    const ccOn = player.querySelector('.ytp-subtitles-button')?.getAttribute('aria-pressed') === 'true';
+    text = ccOn && !player.classList.contains('ad-showing') ? cueAt(cues, video.currentTime * 1000) : '';
+  } else {
+    // A Set drops lines the site renders twice (e.g. two caption windows holding the same cue).
+    const parts = new Set([...player.querySelectorAll(site.text)].map((s) => s.textContent.trim()).filter(Boolean));
+    text = [...parts].join(' ').split(/\s+/).join(' ');
+  }
   if (box.textContent !== text) box.textContent = text;
   box.hidden = !text;
 
@@ -86,7 +141,6 @@ function update() {
   box.style.fontSize = site.base(player, el) * (cfg.size / 100) + 'px';
 
   if (site.mirror) {
-    const video = document.querySelector('video');
     if (el && video) {
       const now = el.getBoundingClientRect().top >= video.getBoundingClientRect().bottom - 2;
       if (now !== under) { under = now; applyStyle(); }
