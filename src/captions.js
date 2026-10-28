@@ -1,20 +1,9 @@
 // Per-site: where to put the pill, where the site's own caption text is, and what to hide.
-// shortcut: Netflix and Prime selectors are untested guesses; fix them with DevTools if captions don't show.
 const SITES = {
   'www.youtube.com': {
     player: '#movie_player',
     text: '.ytp-caption-segment',
     hide: '.ytp-caption-window-container',
-  },
-  'www.netflix.com': {
-    player: '.watch-video--player-view',
-    text: '.player-timedtext-text-container span',
-    hide: '.player-timedtext',
-  },
-  'www.primevideo.com': {
-    player: '.webPlayerSDKContainer',
-    text: '.atvwebplayersdk-captions-text',
-    hide: '.atvwebplayersdk-captions-overlay',
   },
   // Udemy's class names are hashed, so use data-purpose and find the player as the closest box holding both video and caption.
   udemy: {
@@ -30,7 +19,7 @@ const SITES = {
     hide: '[data-purpose="captions-cue-text"], [class*="captions-display-module--captions-container"]',
   },
 };
-const site = SITES[location.hostname] || (location.hostname.endsWith('udemy.com') && SITES.udemy);
+const site = ((location.hostname.endsWith('youtube.com') || location.hostname.endsWith('youtube-nocookie.com')) && SITES['www.youtube.com']) || (location.hostname.endsWith('udemy.com') && SITES.udemy);
 
 const DEFAULTS = { enabled: true, group: false, words: 6, size: 2.4, opacity: 72, bg: '#555555', color: '#ffffff', radius: 45, bottom: 13, font: 'outfit' };
 let cfg = { ...DEFAULTS };

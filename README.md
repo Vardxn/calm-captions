@@ -1,6 +1,6 @@
 # Calm Captions
 
-Calmer subtitles for YouTube and Udemy (Netflix and Prime Video are experimental). Short groups of words in a soft rounded pill, with your own font, size and colors. Collects no data.
+Calmer subtitles for YouTube (including YouTube videos embedded on other sites) and Udemy. Short groups of words in a soft rounded pill, with your own font, size and colors. Collects no data.
 
 ## Install
 - **Edge / Firefox:** install from the add-on store (link coming soon).
@@ -20,6 +20,7 @@ The rounded font covers Latin scripts (English, Spanish, French, Portuguese...).
 
 ## Known limits
 - With *Group words* on, groups appear once their last word is spoken, so there is about one group of delay.
-- Udemy, Netflix and Prime Video selectors are untested; Hotstar is not supported yet.
+- Udemy support is based on its current page structure and may need a fix if Udemy changes.
+- Netflix, Prime Video and Hotstar are not supported.
 
 MIT licensed. See [PRIVACY.md](PRIVACY.md).
