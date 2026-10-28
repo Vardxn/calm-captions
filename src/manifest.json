@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Calm Captions",
-  "version": "2.0.1",
-  "description": "Calmer subtitles for YouTube, Netflix and Prime Video: short, rounded, easy on the eyes. Pick your font, size and colors.",
+  "version": "2.1.0",
+  "description": "Calmer subtitles for YouTube, Udemy, Netflix and Prime Video: short, rounded, easy on the eyes. Pick your font, size and colors.",
   "permissions": [
     "storage"
   ],
@@ -22,7 +22,8 @@
       "matches": [
         "https://www.youtube.com/*",
         "https://www.netflix.com/*",
-        "https://www.primevideo.com/*"
+        "https://www.primevideo.com/*",
+        "https://*.udemy.com/*"
       ]
     }
   ],
@@ -31,7 +32,8 @@
       "matches": [
         "https://www.youtube.com/*",
         "https://www.netflix.com/*",
-        "https://www.primevideo.com/*"
+        "https://www.primevideo.com/*",
+        "https://*.udemy.com/*"
       ],
       "css": [
         "captions.css"

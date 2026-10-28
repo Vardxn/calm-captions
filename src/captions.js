@@ -16,10 +16,16 @@ const SITES = {
     text: '.atvwebplayersdk-captions-text',
     hide: '.atvwebplayersdk-captions-overlay',
   },
+  // shortcut: Udemy's class names are hashed, so these use stable data-purpose / partial class matches; untested
+  udemy: {
+    player: '[class*="video-player--container"]',
+    text: '[data-purpose="captions-cue-text"]',
+    hide: '[data-purpose="captions-display"], [data-purpose="captions-cue-text"], [class*="captions-display--captions-container"]',
+  },
 };
-const site = SITES[location.hostname];
+const site = SITES[location.hostname] || (location.hostname.endsWith('udemy.com') && SITES.udemy);
 
-const DEFAULTS = { words: 6, size: 2.4, opacity: 72, bg: '#555555', color: '#ffffff', radius: 45, bottom: 13, font: 'outfit' };
+const DEFAULTS = { enabled: true, words: 6, size: 2.4, opacity: 72, bg: '#555555', color: '#ffffff', radius: 45, bottom: 13, font: 'outfit' };
 let cfg = { ...DEFAULTS };
 
 // Loaded from JS so the same file works in Chrome, Edge and Firefox (their extension URLs differ).
@@ -33,9 +39,9 @@ box.id = 'soft-caption';
 box.hidden = true;
 const hideStyle = document.createElement('style');
 document.documentElement.appendChild(hideStyle);
-hideStyle.textContent = `${site.hide}{opacity:0!important;pointer-events:none}`;
 
 function applyStyle() {
+  hideStyle.textContent = cfg.enabled ? `${site.hide}{opacity:0!important;pointer-events:none}` : '';
   const s = box.style;
   s.setProperty('--sc-bg', `color-mix(in srgb, ${cfg.bg} ${cfg.opacity}%, transparent)`);
   s.setProperty('--sc-color', cfg.color);
@@ -75,6 +81,7 @@ function update() {
   queued = false;
   const player = document.querySelector(site.player);
   if (!player) return;
+  if (!cfg.enabled) { box.hidden = true; return; }
   if (box.parentNode !== player) {
     player.appendChild(box);
     player.querySelector('video')?.addEventListener('seeking', clearAll);
