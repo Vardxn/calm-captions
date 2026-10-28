@@ -4,7 +4,8 @@ function buildCues(events, asr) {
   const out = [];
   if (!asr) {
     for (const ev of events) {
-      const text = (ev.segs || []).map((s) => s.utf8).join('').replace(/\s+/g, ' ').trim();
+      // keep the caption's own line breaks, tidy the spaces inside each line
+      const text = (ev.segs || []).map((s) => s.utf8).join('').split('\n').map((l) => l.replace(/\s+/g, ' ').trim()).filter(Boolean).join('\n');
       if (text) out.push({ s: ev.tStartMs, e: ev.tStartMs + (ev.dDurationMs || 2000), text });
     }
     return out;
@@ -20,7 +21,9 @@ function buildCues(events, asr) {
   let cur = [];
   const flush = () => {
     if (!cur.length) return;
-    out.push({ s: cur[0].s, e: cur[cur.length - 1].s + 1500, text: cur.map((x) => x.w).join(' ') });
+    // a pause inside the cue starts a second line
+    const text = cur.map((x, i) => (i === 0 ? '' : x.s - cur[i - 1].s > 450 ? '\n' : ' ') + x.w).join('');
+    out.push({ s: cur[0].s, e: cur[cur.length - 1].s + 1500, text });
     cur = [];
   };
   for (const x of words) {

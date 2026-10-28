@@ -132,7 +132,7 @@ function update() {
   } else {
     // A Set drops lines the site renders twice (e.g. two caption windows holding the same cue).
     const parts = new Set([...player.querySelectorAll(site.text)].map((s) => s.textContent.trim()).filter(Boolean));
-    text = [...parts].join(' ').split(/\s+/).join(' ');
+    text = [...parts].map((p) => p.replace(/\s+/g, ' ')).join('\n'); // one line per caption line
   }
   if (box.textContent !== text) box.textContent = text;
   box.hidden = !text;
